@@ -11,13 +11,13 @@
 <hr />
 
 ## EBSD Framework
-<img src = >
+<img src = figures/>
 
 
 ## Installation
 Step 1: Clone repo  
 
-      git clone ""
+      git clone "https://github.com/UCSB-VRL/EBSD-Superresolution.git"
       
 Step 2: Create Virtual environment
 
@@ -37,6 +37,51 @@ Step 5: Install gradual warmup scheduler. Go to pytorch-gradual-warmup-lr folder
        
 
 ## Training 
+Run
+```
+./train.sh
+```
+Define the following parameters to train network
+   
+* --input_dir "Directory Path to Datasets"
+* --hr_data_dir "Directory Path to High Resolution Datasets"
+* --val_lr_data_dir "Directory Path to Low Res Val Datasets"
+* --val_hr_data_dir "Directory Path to High Res Val Datasets"
+* --model "Network Architecture"
+* --n_resblocks "Number of Residual Blocks"
+* --n_resgroups "Number of Residual Groups"
+* --n_colors "Number of Channel (for quaternion, it is 4)"
+* --save "Folder name to save weights, loss curves and logs"
+* --loss "Type of Loss for e.g. (misorientation.py has all combinations L1, L2 , tanh activation and rotational distance)"
+* --dist_type "Which dist type for Loss (L1/L2/riot_dist_approx)"
+   
+Important parameters in argparser.py 
+   
+* --syms_req "It tells whether you want to use symmetry or not during Loss calculation"
+* --GPU_Ids "Default gpu number is zero"
+* --patch_size "Size of Patch During Training"
+* --act "Activation Function in Network"
+* --save_model_freq "How frequently do you want to save models"
+* --act_loss "Whether you want to use tanh activation or not"
+      
+
+
 
 ## Evaluation
+Run
+```
+./test.sh
+```
+use "--test_only" flag as True
+
+Inference model will be available on BisQue (https://bisque2.ece.ucsb.edu/client_service/) as module. 
+
+## Results
+
+## Acknowledgements
+
+## Citation
+
+## Contact
+Should you have any question, please contact dkjangid@ucsb.edu or nbrodnik@ucsb.edu
        
