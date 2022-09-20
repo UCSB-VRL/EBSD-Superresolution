@@ -11,7 +11,7 @@
 <hr />
 
 ## EBSD Framework
-<img src = figures/>
+<img src = "images/EBSD_SR_train_val_loss_comp_lg.png">
 
 
 ## Installation
@@ -65,8 +65,6 @@ Important parameters in argparser.py
 * --act_loss "Whether you want to use tanh activation or not"
       
 
-
-
 ## Evaluation
 Run
 ```
@@ -77,6 +75,10 @@ use "--test_only" flag as True
 Inference model will be available on BisQue (https://bisque2.ece.ucsb.edu/client_service/) as module. 
 
 ## Results
+<img src = "images/QualitativeResults.png">
+
+## Datasets
+Material datasets will be available by request at discretion of author. 
 
 ## Acknowledgements
 
