@@ -82,14 +82,40 @@ Important parameters in argparser.py
 * ```--save_model_freq```: "How frequently do you want to save models"
 
 ## Evaluation
+      
+We will provide inference model on [BisQue](https://bisque2.ece.ucsb.edu/client_service/) as module. You do not need to use following steps if you are using Bisque infrastructure. 
+      
+Download trained weights for different networks trained with different losses from [here](https://drive.google.com/drive/folders/1IPygG4-ulduOTLtYoZUlqiXVm6RwJeWC)
+
+Put it in ```./experiment/saved_weights/{name_of_file}/model/{name_of_file}.pt```
+ 
+### For example 
+      
+If you use edsr with L1 loss:
+```
+./experiment/saved_weights/edsr_l1_ti64/model/edsr_l1_ti64.pt
+```      
+
+```--model```: edsr
+      
+```--save```: 'edsr_l1_ti64'
+      
+```--model_to_load```: 'edsr_l1_ti64'
+      
+```--dist_type```: 'l1'
+      
+```--test_only```    
 Run
 ```
 ./test.sh
 ```
-use ```--test_only``` flag as True
+The generated results will be saved at ```experiments/saved_weights/edsr_l1_ti64/results/Test_edsr_l1_ti64``` in npy format. It will also generate images (.png) for each quaternion channel.
 
-Inference model will be available on [BisQue](https://bisque2.ece.ucsb.edu/client_service/) as module. 
-
+## Visualization
+The model will generate superresolved EBSD map in ```npy``` format. To convert into IPF maps from npy files, please see [IPF Mapping](https://github.com/UCSB-VRL/EBSD-Superresolution/tree/main/IPF_mapping)
+      
+      
+ 
 ## Results
 <img src = "images/QualitativeResults.png">
 
