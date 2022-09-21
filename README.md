@@ -41,29 +41,45 @@ Run
 ```
 ./train.sh
 ```
+<table>
+      <tr>
+          <th align="center">Loss</th>
+          <th align="center">dist_type</th>
+           <th align="center">syms_req</th>  
+      </tr>
+       <tr>
+          <td align="center">L1</td>
+          <td align="center">L1</td>
+          <td align="center">False</td>  
+      </tr>
+       <tr>
+          <td align="center">L1 with symmetry</td>
+          <td align="center">L1</td>
+          <td align="center">True</td>  
+      </tr>
+        <tr>
+          <td align="center">Rotational distance approximation with symmetry</td>
+          <td align="center">rot_dist_approx</td>
+          <td align="center">True</td>  
+      </tr>
+<table>
+
+
 Define the following parameters to train network
    
 * ```--input_dir```: "Directory Path to Datasets"
-* ```--hr_data_dir```: "Directory Path to High Resolution Datasets"
-* ```--val_lr_data_dir```: "Directory Path to Low Res Val Datasets"
-* ```--val_hr_data_dir```: "Directory Path to High Res Val Datasets"
-* ```--model```: "Network Architecture"
-* ```--n_resblocks```: "Number of Residual Blocks"
-* ```--n_resgroups```: "Number of Residual Groups"
-* ```--n_colors```: "Number of Channel (for quaternion, it is 4)"
+* ```--hr_data_dir```: "Path to High Resolution EBSD Maps relative to input_dir"
+* ```--val_lr_data_dir```: "Path to Low Resolution EBSD Val Datasets"
+* ```--val_hr_data_dir```: "Path to High Resolution EBSD Val Datasets"
+* ```--model```: "Choose one of network architectures from edsr, rfdn, san, han"
 * ```--save```: "Folder name to save weights, loss curves and logs"
-* ```--loss```: "Type of Loss for e.g. (misorientation.py has all combinations L1, L2 , tanh activation and rotational distance)"
-* ```--dist_type```: "Which dist type for Loss (L1/L2/riot_dist_approx)"
    
 Important parameters in argparser.py 
    
 * ```--syms_req```: "It tells whether you want to use symmetry or not during Loss calculation"
-* ```--GPU_Ids```: "Default gpu number is zero"
 * ```--patch_size```: "Size of Patch During Training"
 * ```--act```: "Activation Function in Network"
 * ```--save_model_freq```: "How frequently do you want to save models"
-* ```--act_loss```: "Whether you want to use tanh activation or not"
-      
 
 ## Evaluation
 Run
@@ -78,7 +94,7 @@ Inference model will be available on [BisQue](https://bisque2.ece.ucsb.edu/clien
 <img src = "images/QualitativeResults.png">
 
 ## Datasets
-Material datasets will be available by request at discretion of author. 
+Material datasets will be available by request at discretion of authors. 
 
 ## Acknowledgements
 
