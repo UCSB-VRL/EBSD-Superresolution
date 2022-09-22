@@ -35,7 +35,7 @@ class EDSR(nn.Module):
         self.body = nn.Sequential(*m_body)
         self.tail = nn.Sequential(*m_tail)
 
-    def forward(self, x):i
+    def forward(self, x):
         x = self.head(x)
         res = self.body(x)
         res += x

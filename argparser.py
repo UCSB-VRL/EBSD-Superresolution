@@ -56,11 +56,11 @@ class Argparser:
                                 help='Batch size of training datasets')
         arg_parser.add_argument('--val_batch_size', type=int, default=1,
                                 help='batch size of validation datasets')
-        arg_parser.add_argument('--patch_size', type=int, default=32,
+        arg_parser.add_argument('--patch_size', type=int, default=64,
                                 help='output patch size from the network')
         arg_parser.add_argument('--rgb_range', type=int, default=2,
                                 help='maximum value of RGB')
-        arg_parser.add_argument('--n_colors', type=int, default=3,
+        arg_parser.add_argument('--n_colors', type=int, default=4,
                                 help='number of channels to use')
         arg_parser.add_argument('--scalar_first', action='store_true', 
                                 help = 'Format for Quaternion data') 
@@ -77,13 +77,13 @@ class Argparser:
                                 help='name of super-resolution model')        
         arg_parser.add_argument('--act', type=str, default='relu',
                                 help='activation function')
-        arg_parser.add_argument('--n_resblocks', type=int, default=2,
+        arg_parser.add_argument('--n_resblocks', type=int, default=20,
                                 help='number of residual blocks')
-        arg_parser.add_argument('--n_resgroups', type=int, default=5,
+        arg_parser.add_argument('--n_resgroups', type=int, default=10,
                                 help='number of residual groups')
         arg_parser.add_argument('--reduction', type=int, default=16,
                                 help='number of feature maps reduction')
-        arg_parser.add_argument('--n_feats', type=int, default=64,
+        arg_parser.add_argument('--n_feats', type=int, default=128,
                                 help='number of feature maps')
         arg_parser.add_argument('--res_scale', type=float, default=1,
                                 help='residual scaling')

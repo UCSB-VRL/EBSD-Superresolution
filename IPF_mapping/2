@@ -18,14 +18,11 @@ home_path="/home/dkjangid/Material_Project/EBSD_Superresolution/NPJ_Repo/EBSD-Su
 # path where numpy files (output of models) are saved
 file_path="/home/dkjangid/Material_Project/EBSD_Superresolution/NPJ_Repo/EBSD-Superresolution/experiments/saved_weights/edsr_l1_ti64/results"
 
-#path of your source dream3d file as refernece
-sourcename="/data/dkjangid/superresolution/Material_Dataset/Ti64_DIC_Homo_and_Cubochoric_FZ.dream3d"
-
 
 for s in ${sect[@]}; do
    
     echo "Running Numpy to Dream3D"
-    python npy_to_dream3d.py --fpath $file_path --data $material --model_name $modelname --file_type $filetype --dataset_type $datasettype --section $s --d3_source $sourcename
+    python npy_to_dream3d.py --fpath $file_path --data $material --model_name $modelname --file_type $filetype --dataset_type $datasettype --section $s
     
     echo "Changing Variable in JSON "
 

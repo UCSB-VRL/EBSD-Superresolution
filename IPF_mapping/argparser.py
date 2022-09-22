@@ -30,5 +30,10 @@ class Argparser:
         arg_parser.add_argument('--section', type=str,
                                 default= 'X_Block',
                                 help='[X_Block, Y_Block, Z_Block]')
-        
+        arg_parser.add_argument('--fpath', type=str, default='',
+                                help='path of saved npy files') 
+        arg_parser.add_argument('--d3_source', type=str, default='',
+                                help='dream3d reference file')
+       
+ 
         return arg_parser

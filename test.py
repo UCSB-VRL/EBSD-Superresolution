@@ -3,8 +3,7 @@ from torch.utils.data import DataLoader
 import utility
 import model
 import loss
-from utility import  EBSD_Ti64DIC_Test_dataset, EBSD_Ti64DIC_dataset
-
+from utility import  EBSD_Ti64DIC_dataset
 from argparser import Argparser
 import os
 from trainer import Trainer
@@ -26,9 +25,7 @@ if checkpoint.ok:
 
     print(f'LR {args.test_dataset_type} Path: {lr_data_path}')
     print(f'HR {args.test_dataset_type} Path: {hr_data_path}')
-    
-    #lr_data_path = None
-    #dataset = EBSD_Ti64DIC_Test_dataset(args, lr_data_path, hr_data_path, is_Train=False) 
+     
     dataset = EBSD_Ti64DIC_dataset(args, lr_data_path, hr_data_path, is_Train=False)  
     data_loader_test = DataLoader(dataset=dataset, batch_size=args.val_batch_size, 
                              num_workers= 1, 

@@ -5,15 +5,11 @@ import glob
 import os
 from argparser import Argparser
 
-#import pdb; pdb.set_trace()
-
 args = Argparser().args
 
-#npy_file_dir = f'../../experiment/{args.model_name}/results/{args.dataset_type}_{args.model_to_load}'
+npy_file_dir = f'{args.fpath}/{args.dataset_type}_{args.model_name}'
 
-npy_file_dir = f'/data/dkjangid/Material_Projects/superresolution/AAAI22_after/saved_weights/{args.model_name}/results/{args.dataset_type}_{args.model_to_load}'
-
-file_locs = sorted(glob.glob(f'{npy_file_dir}/{args.data}/*{args.section}*{args.file_type}*.npy'))
+file_locs = sorted(glob.glob(f'{npy_file_dir}/*{args.section}*{args.file_type}*.npy'))
 
 total_file = len(file_locs)
 
@@ -23,16 +19,17 @@ for file_loc in file_locs:
     print(arr.shape)
     arr_list.append(arr)
 
-#import pdb; pdb.set_trace()
 loaded_npy = np.asarray(arr_list)
      
-d3_sourceName = '/data/dkjangid/superresolution/Material_Dataset/Ti64_DIC_Homo_and_Cubochoric_FZ.dream3d'
+#d3_sourceName = '/data/dkjangid/superresolution/Material_Dataset/Ti64_DIC_Homo_and_Cubochoric_FZ.dream3d'
+d3_sourceName=f'{args.d3_source}'
+
 
 # The path for the output Dream3D file being written.  This is where you want to save the file you are making.
 
-save_path = f'{npy_file_dir}/{args.data}/Dream3D'
+save_path = f'{npy_file_dir}/Dream3D'
 
-if not os.path.exists(f'{npy_file_dir}/{args.data}/Dream3D'):
+if not os.path.exists(f'{npy_file_dir}/Dream3D'):
     os.makedirs(f'{save_path}')
 
 d3_outputName = f'{save_path}/{args.section}_{args.file_type}.dream3d'

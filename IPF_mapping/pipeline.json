@@ -5,7 +5,7 @@
         "Filter_Human_Label": "Read DREAM.3D Data File",
         "Filter_Name": "DataContainerReader",
         "Filter_Uuid": "{043cbde5-3878-5718-958f-ae75714df0df}",
-        "InputFile": "/data/dkjangid/Material_Projects/superresolution/AAAI22_after/saved_weights/han_rotdist_symm_titanium_dataset/results/Test_model_best/Ti7_3Percent/Dream3D/Z_Block_SR.dream3d",
+        "InputFile": "/home/dkjangid/Material_Project/EBSD_Superresolution/NPJ_Repo/EBSD-Superresolution/experiments/saved_weights/edsr_l1_ti64/results/Test_edsr_l1_ti64/Dream3D/Z_Block_SR.dream3d",
         "InputFileDataContainerArrayProxy": {
             "Data Containers": [
                 {
@@ -21,9 +21,9 @@
                                     "Object Type": "DataArray<float> ",
                                     "Path": "/DataContainers/ImageDataContainer/CellData",
                                     "Tuple Dimensions": [
-                                        213,
-                                        510,
-                                        56
+                                        142,
+                                        346,
+                                        24
                                     ],
                                     "Version": 2
                                 },
@@ -36,9 +36,9 @@
                                     "Object Type": "DataArray<float> ",
                                     "Path": "/DataContainers/ImageDataContainer/CellData",
                                     "Tuple Dimensions": [
-                                        213,
-                                        510,
-                                        56
+                                        142,
+                                        346,
+                                        24
                                     ],
                                     "Version": 2
                                 }
@@ -157,7 +157,7 @@
         "Filter_Human_Label": "Write DREAM.3D Data File",
         "Filter_Name": "DataContainerWriter",
         "Filter_Uuid": "{3fcd4c43-9d75-5b86-aad4-4441bc914f37}",
-        "OutputFile": "/data/dkjangid/Material_Projects/superresolution/AAAI22_after/saved_weights/han_rotdist_symm_titanium_dataset/results/Test_model_best/Ti7_3Percent/Dream3D/Z_Block_SR.dream3d",
+        "OutputFile": "/home/dkjangid/Material_Project/EBSD_Superresolution/NPJ_Repo/EBSD-Superresolution/experiments/saved_weights/edsr_l1_ti64/results/Test_edsr_l1_ti64/Dream3D/Z_Block_SR.dream3d",
         "WriteTimeSeries": 0,
         "WriteXdmfFile": 1
     },
