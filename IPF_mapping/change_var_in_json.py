@@ -5,6 +5,8 @@ args = Argparser().args
 
 f = open('pipeline.json')
 
+#import pdb;pdb.set_trace()
+
 field_dict = json.load(f)
 
 data = args.data
