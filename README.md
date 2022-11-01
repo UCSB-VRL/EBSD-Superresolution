@@ -123,6 +123,7 @@ The model will generate superresolved EBSD map in ```npy``` format. To convert i
 Material datasets will be available by request at discretion of authors. 
 
 ## Acknowledgements
+This code is built on [HAN](https://github.com/wwlCape/HAN), [SAN](https://github.com/daitao/SAN), [RCAN](https://github.com/yulunzhang/RCAN), and [EDSR](https://github.com/sanghyun-son/EDSR-PyTorch). We thank the authors for sharing their codes. 
 
 ## Citation
 
