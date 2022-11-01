@@ -19,7 +19,6 @@ if checkpoint.ok:
 
     """
    
-    import pdb; pdb.set_trace()
     lr_data_path = f'/{args.input_dir}/{args.test_dataset_type}/LR_Images/X{args.scale}/preprocessed_imgs_all_Block'
     hr_data_path = f'/{args.input_dir}/{args.test_dataset_type}/HR_Images/preprocessed_imgs_all_Block'
 

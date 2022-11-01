@@ -70,9 +70,6 @@ def get_patch_1D(img_in, img_hr_in, patch_size, scale):
     return img_ds, img_hr_in
 
 
-
-
-
 def set_channel(l, n_channel):
     def _set_channel(img):
         if img.ndim == 2:

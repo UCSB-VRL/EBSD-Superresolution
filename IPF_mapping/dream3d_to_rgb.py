@@ -7,7 +7,6 @@ from argparser import Argparser
 
 args = Argparser().args
 
-#import pdb; pdb.set_trace()
 npy_file_dir = f'{args.fpath}/{args.dataset_type}_{args.model_name}'
 
 file_locs = sorted(glob.glob(f'{npy_file_dir}/*{args.section}*{args.file_type}*.npy'))
