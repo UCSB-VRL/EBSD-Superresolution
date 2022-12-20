@@ -3,7 +3,7 @@
 
 [* equal contirbution]
 
-[paper]()
+[paper](https://www.nature.com/articles/s41524-022-00924-2)
 
 <hr />
 
@@ -126,6 +126,18 @@ Material datasets will be available by request at discretion of authors.
 This code is built on [HAN](https://github.com/wwlCape/HAN), [SAN](https://github.com/daitao/SAN), [RCAN](https://github.com/yulunzhang/RCAN), and [EDSR](https://github.com/sanghyun-son/EDSR-PyTorch). We thank the authors for sharing their codes. 
 
 ## Citation
+If you use EBSD-SR, please consider citing:
+
+      @article{jangid2022adaptable,
+      title={Adaptable physics-based super-resolution for electron backscatter diffraction maps},
+      author={Jangid, Devendra K and Brodnik, Neal R and Goebel, Michael G and Khan, Amil and Majeti, SaiSidharth and Echlin, McLean P and Daly, Samantha H and Pollock, Tresa M and Manjunath, BS},
+      journal={npj Computational Materials},
+      volume={8},
+      number={1},
+      pages={1--9},
+      year={2022},
+      publisher={Nature Publishing Group}
+      }
 
 ## Contact
 Should you have any question, please contact dkjangid@ucsb.edu or nbrodnik@ucsb.edu
