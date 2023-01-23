@@ -134,9 +134,9 @@ If you use EBSD-SR, please consider citing:
       journal={npj Computational Materials},
       volume={8},
       number={1},
-      pages={1--9},
+      pages={255},
       year={2022},
-      publisher={Nature Publishing Group}
+      publisher={Nature Publishing Group UK London}
       }
 
 ## Contact
