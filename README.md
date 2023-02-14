@@ -3,7 +3,8 @@
 
 [* equal contirbution]
 
-[paper](https://www.nature.com/articles/s41524-022-00924-2)
+[Paper](https://www.nature.com/articles/s41524-022-00924-2) ||
+[Poster](https://github.com/UCSB-VRL/EBSD-Superresolution/blob/main/images/EBSD_SR_Poster_24x36_final.pdf)
 
 <hr />
 
