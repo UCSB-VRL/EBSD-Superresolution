@@ -1,6 +1,6 @@
 import torch
-from mat_sci_torch_quats.quats import fz_reduce, normalize, rand_quats, outer_prod, rot_dist, validation_min_angle_transformation, validation_rot_dist_approx_MAT_symmetry, scalar_first2last,  scalar_last2first, misorientation, inverse, transformation_matrix_tensor, misorientation, matrix_hamilton_prod
-from mat_sci_torch_quats.rot_dist_approx import RotDistLoss, RotDistRelative
+from mat_sci_torch_quats.quats import fz_reduce, normalize, rand_quats, outer_prod, rot_dist, validation_min_angle_transformation, validation_rot_dist_approx_MAT_symmetry, scalar_first2last,  scalar_last2first, misorientation, inverse, misorientation, matrix_hamilton_prod, transformation_matrix_tensor_weighted, transformation_matrix_scalar
+from mat_sci_torch_quats.rot_dist_approx import RotDistLoss, RotDistRelative, ArccosApprox
 from mat_sci_torch_quats.symmetries import fcc_syms, hcp_syms
 import torch.nn as nn
 import torch.nn.functional as F
@@ -103,13 +103,13 @@ class Loss:
                     self.dist_func = l2
                 elif dist_func == 'rot_dist':
                 #     import pdb; pdb.set_trace()
-                    self.dist_func = validation_rot_dist_approx_MAT_symmetry
+                    self.dist_func = validation_min_angle_transformation
                 #     self.dist_func = validation_min_angle_transformation # GETS CALLED DURING VALIDATION
                 elif dist_func == 'rot_dist_approx_MAT_symmetry':
                   self.dist_func = RotDistLoss()
                 elif dist_func == 'minimum_angle_transformation':
                 #     import pdb; pdb.set_trace()
-                    self.dist_func = RotDistLoss() # GETS CALLED DURING TRAINING
+                    self.dist_func = ArccosApprox() # GETS CALLED DURING TRAINING
                 elif dist_func == 'rot_dist_approx':
                     self.dist_func = RotDistLoss()
 
@@ -127,8 +127,6 @@ class Loss:
                 #self.quat_dim = quat_dim
 
         def __call__(self,q1,q2):   
-
-                
 
                 if self.dist_type == 'rot_dist_approx_MAT_symmetry':
                 #   import pdb; pdb.set_trace()
@@ -150,13 +148,26 @@ class Loss:
                   return self.dist_func(q1_MAT, q2) 
 
                 elif self.dist_type == 'minimum_angle_transformation':
-                  
-                  q1 = normalize(q1)
-                        ## Training with the minimum_angle_transformation based loss-function
-                  T_min = transformation_matrix_tensor(q1, q2, self.syms)
-                  zero_broadcast_tensor = torch.Tensor([1,0,0,0])
-                  zero_broadcast_tensor = zero_broadcast_tensor.reshape(1,1,1,4) 
-                  return self.dist_func(T_min, zero_broadcast_tensor)
+                        # import pdb; pdb.set_trace()
+                #   qSR, qHRfz = normalize(q1), q2
+                        qSR, qHR = q1, q2
+
+                        max_scalar = transformation_matrix_scalar(qSR, qHR, self.syms).to(torch.float32)
+
+                        return self.dist_func(torch.abs(max_scalar))
+                        # qSR_syms = outer_prod(qSR, syms)
+
+                        # q_diff = 
+
+                        # return transformation_matrix_tensor_weighted(qSR, qHR, self.syms)
+
+                        # T_min = transformation_matrix_tensor_weighted(qSR, qHR, self.syms)
+
+                        # compare performance with just returning angle (Theta) and 1/2 each transformation.
+
+                        # zero_broadcast_tensor = torch.Tensor([1,0,0,0])
+                        # zero_broadcast_tensor = zero_broadcast_tensor.reshape(1,1,1,4) 
+                        # return self.dist_func(T_min, zero_broadcast_tensor)
                 
                 elif self.dist_type == 'rot_dist_approx':
                   self.syms = self.syms.cuda()

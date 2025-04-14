@@ -12,7 +12,7 @@ from torch.autograd import Variable
 from torch.nn import functional as F
 from tqdm import tqdm
 from collections import defaultdict 
-from mat_sci_torch_quats.quats import fz_reduce, scalar_last2first, scalar_first2last
+from mat_sci_torch_quats.quats import fz_reduce, scalar_last2first, scalar_first2last, normalize
 from mat_sci_torch_quats.symmetries import fcc_syms, hcp_syms  
 from collections import defaultdict
 import time
@@ -76,6 +76,9 @@ class Trainer():
             self.optimizer.zero_grad()
 
             sr = self.model(lr, self.scale)
+
+            # Introduced normalization of SR
+            sr = normalize(sr)
 
             _, ch, _, _ = sr.shape
    

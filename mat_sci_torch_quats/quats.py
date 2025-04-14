@@ -116,49 +116,81 @@ def safe_arccos(x):
     output = mask*output_arccos + (1-mask)*output_linear
     return output
 
-# Generate the minimum angle transformation with PyTorch, to enable automatic differentiation
-def transformation_matrix_tensor(q1, q2, syms):
-
+def transformation_matrix_tensor_weighted(qSR, qHR, syms):
         syms_neg = -1*syms
         syms = torch.cat((syms, syms_neg))
-
         syms = syms.to(torch.device('cuda:0'))
 
-        inv = inverse_matrix_generate(q1) # only uses q1 to obtain tensor shape.
-        q1_inv = q1 * inv
-        q2_inv = q2 * inv
-        T1 = matrix_hamilton_prod(q1_inv, q2)
-        T2 = matrix_hamilton_prod(q2_inv, q1)
+        inv = inverse_matrix_generate(qSR) # Only uses qSR to obtain tensor shape.
+        qSR_inv = qSR * inv
+        qHR_inv = qHR * inv
+
+        T1 = matrix_hamilton_prod(qSR_inv, qHR)
+        T2 = matrix_hamilton_prod(qHR_inv, qSR)
 
         T1_syms = outer_prod(T1, syms)
         T1_syms = T1_syms.view(-1, syms.shape[0], 4)
-
         T2_syms = outer_prod(T2, syms)
         T2_syms = T2_syms.view(-1, syms.shape[0], 4)
 
-        ## Is it possible 
+        theta1 = 2*safe_arccos(T1_syms[...,0].max(-1)[0])
+        theta2 = 2*safe_arccos(T2_syms[...,0].max(-1)[0])
+
+        return .5 * theta1 + .5 * theta2
+
+# Minimum Angle Transformation = compute difference quaternion in both directions qSR <-> qHR, and return the one with minimum theta.
+## We are purposefully applying symmetry permutation operator on qSR, so that gradients force network to choose a specific symmetry.
+def transformation_matrix_scalar(qSR, qHR, syms):
 
         # import pdb; pdb.set_trace()
-        T_syms = torch.cat((T1_syms, T2_syms), 1)
 
-        theta = torch.arccos(T1_syms[...,0])
-        min_ind = theta.min(-1)[1] # still differentiable --> gradient flows through only for min.
-        min_ind_flat = min_ind.view(-1)
+        syms_neg = -1*syms
+        syms = torch.cat((syms, syms_neg))
+        syms = syms.to(torch.device('cuda:0'))
 
-        try:
-                # import pdb; pdb.set_trace()
-                T_min = T1_syms[torch.arange(len(T1_syms)), min_ind_flat]
+        qSR_syms = outer_prod(qSR, syms)
+        qSR_syms_inverse = inverse(qSR_syms)
+        T_syms = matrix_hamilton_prod(qSR_syms_inverse, qHR.unsqueeze(3))
 
-        except RuntimeError as e:
-                print('broadcasting issue \n')
-                import pdb; pdb.set_trace()
+        T_syms_scalar = T_syms[...,0].max(-1)[0]
 
-        T_min = T_min.reshape(q1.shape)
+        return T_syms_scalar
 
-        # q_loss_inv = matrix_hamilton_prod(q1_inv, T_min) ## Perhaps the error is here, can't backpropagate current inverse function applied to q_nn.
-        # q_loss = q_loss_inv * inv
+        # theta = torch.arccos(T_syms[...,0])
+        # min_theta= theta.min(-1)[0]
 
-        return T_min
+        # return 2*min_theta
+
+        # min_ind_flat = min_ind.view(-1)
+
+        # T_min = T_syms[torch.arange(len(T_syms)), min_ind_flat]
+        # T_min = T_min.reshape(qSR.shape)
+
+
+
+        # inv = inverse_matrix_generate(qSR) # Only uses qSR to obtain tensor shape.
+        # qSR_inv = qSR * inv
+        # qHR_inv = qHR * inv
+        # T = matrix_hamilton_prod(qSR_inv, qHR)
+        # T2 = matrix_hamilton_prod(qHR_inv, qSR)
+
+        # T1_syms = outer_prod(T1, syms)
+        # T1_syms = T1_syms.view(-1, syms.shape[0], 4)
+
+        # T2_syms = outer_prod(T2, syms)
+        # T2_syms = T2_syms.view(-1, syms.shape[0], 4)
+
+        # # import pdb; pdb.set_trace()
+        # T_syms = torch.cat((T1_syms, T2_syms), 1)
+
+        # theta = torch.arccos(T1_syms[...,0])
+        # min_ind = theta.min(-1)[1] # still differentiable --> gradient flows through only for min.
+        # min_ind_flat = min_ind.view(-1)
+
+        # T_min = T_syms[torch.arange(len(T_syms)), min_ind_flat]
+        # T_min = T_min.reshape(qSR.shape)
+
+        # return T_min
 
 # Generate an "inverse-creating" tensor (will generate an inverse when multiplied with quaternion orientation tensor) required for the size of input matrix
 def inverse_matrix_generate(q):
@@ -217,8 +249,6 @@ def rot_dist(q1,q2=None):
 
 def validation_rot_dist_approx_MAT_symmetry(q1, q2, syms):
 
-        import pdb; pdb.set_trace()
-
         device = torch.device('cuda:0')
         q1 = normalize(q1)
 
@@ -241,32 +271,59 @@ def validation_rot_dist_approx_MAT_symmetry(q1, q2, syms):
         return theta
 
 # Calculates validation loss, using the minimum angle transformation, but without tracking gradients.
-def validation_min_angle_transformation(q1, q2, syms):
+def validation_min_angle_transformation(qSR, qHR, syms):
 
-        # import pdb; pdb.set_trace()
         device = torch.device('cuda:0')
 
-        q1 = q1.to(device)
+        qSR = qSR.to(device)
+        syms_neg = -1*syms
+        syms = torch.cat((syms, syms_neg))
+
+        qSR_syms = outer_prod(qSR, syms)  # shape: [batch, 48]
+        qHR_syms = outer_prod(qHR, syms)  # shape: [batch, 48]
+
+        qSR_inv = inverse(qSR_syms)       # [batch, 48]
+        # Compute all pairwise combinations
+        # Broadcasting to [batch, 48, 48]
+        qSR_inv_exp = qSR_inv[:, :, None, :]  # [batch, 48, 1, 4]
+        qHR_exp = qHR_syms[:, None, :, :] # [batch, 1, 48, 4]
+
+        T = matrix_hamilton_prod(qSR_inv_exp, qHR_exp)  # [batch, 48, 48, 4]
+
+        theta = 2 * safe_arccos(torch.abs(T[..., 0]))   # [batch, 48, 48]
+        theta_min = theta.view(theta.shape[0], -1).min(-1)[0]  # [batch]
+
+        return theta_min
+                
+        # qSR_syms = outer_prod(qSR, syms)
+        # qHR_syms = outer_prod(qHR, syms)
+        # T_syms = matrix_hamilton_prod(inverse(qSR_syms), qHR_syms)
+
+        # theta = 2*safe_arccos(torch.abs(T_syms[...,0]))
+        # theta_min = theta.min(-1)[0]
+
+        # return theta_min
+
         # q2 = q2.to(device)
-        T1 = matrix_hamilton_prod(q1, inverse(q2.to(device)))
-        T1_syms = outer_prod(T1, syms)
-        T1_syms = T1_syms.view(-1, syms.shape[0], 4)
+        # T1 = matrix_hamilton_prod(q1, inverse(q2.to(device)))
+        # T1_syms = outer_prod(T1, syms)
+        # T1_syms = T1_syms.view(-1, syms.shape[0], 4)
 
-        T2 = matrix_hamilton_prod(q2, inverse(q1.to(device)))
-        T2_syms = outer_prod(T2, syms)
-        T2_syms = T2_syms.view(-1, syms.shape[0], 4)
+        # T2 = matrix_hamilton_prod(q2, inverse(q1.to(device)))
+        # T2_syms = outer_prod(T2, syms)
+        # T2_syms = T2_syms.view(-1, syms.shape[0], 4)
 
-        T_syms = torch.cat((T1_syms, T2_syms), 1)
+        # T_syms = torch.cat((T1_syms, T2_syms), 1)
 
-        theta = torch.arccos(T_syms[...,0])
-        min_ind = theta.min(-1)[1]
+        # theta = torch.arccos(T_syms[...,0])
+        # min_ind = theta.min(-1)[1]
 
-        # theta_min = theta[torch.arange(len(theta)), min_ind]
-        # import pdb; pdb.set_trace()
-        T_min = T_syms[torch.arange(len(T_syms)), min_ind]
-        T_min = T_min.reshape(q1.shape)
+        # # theta_min = theta[torch.arange(len(theta)), min_ind]
+        # # import pdb; pdb.set_trace()
+        # T_min = T_syms[torch.arange(len(T_syms)), min_ind]
+        # T_min = T_min.reshape(q1.shape)
 
-        theta = 2*safe_arccos(T_min[...,0])
+        # theta = 2*safe_arccos(T_min[...,0])
         # zero_broadcast_tensor = torch.Tensor([1,0,0,0])
         # zero_broadcast_tensor = zero_broadcast_tensor.reshape(1,1,1,4).to(torch.device('cuda:0'))
 
@@ -274,7 +331,7 @@ def validation_min_angle_transformation(q1, q2, syms):
         # # import pdb; pdb.set_trace() ## WHY DID I PLACE A 0 INDEX?
         # dist = 4*torch.arcsin(euclid_dist / 2)
    
-        return theta
+        # return theta
 
 # quaternion 'q', to the power of 't'
 # you need to understand 

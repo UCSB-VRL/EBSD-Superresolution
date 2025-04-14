@@ -8,6 +8,11 @@ def normalize(x):
 
     return y_norm
 
+class ThetaApprox(torch.nn.Module):
+    def forward(self, theta):
+
+        theta_approx = Eu
+
 class RotDistLoss(torch.nn.Module):
     def forward(self,q_pred,q_gt):
 
@@ -105,6 +110,9 @@ class RotDistRelative(torch.nn.Module):
         # theta.requires_grad_() # re-enable gradients, since we had pushed q_pred and q_gt to the cpu
         # return theta
 
+        
+
+
 def euclid2rot(x):
     return 2*torch.arccos(1 - 0.5*x**2)
 
@@ -142,6 +150,39 @@ class EuclidToRotApprox:
         y_out = y_abs * (x <= self.eps).float() + \
                 y_rot * torch.logical_and(x > self.eps,x < self.t).float() + \
                 y_lin * (x >= self.t).float()
+
+        return y_out
+
+class ArccosApprox:
+    def __init__(self, eps=0.01):
+        self.eps = eps
+
+        # Left endpoint at x = -1
+        x_left = torch.tensor([-1.0 + self.eps], requires_grad=True)
+        y_left = 2*torch.arccos(x_left)
+        y_left.backward()
+        self.m_left = float(x_left.grad)
+        self.b_left = float(y_left - self.m_left * x_left)
+
+        # Right endpoint at x = 1
+        x_right = torch.tensor([1.0 - self.eps], requires_grad=True)
+        y_right = 2*torch.arccos(x_right)
+        y_right.backward()
+        self.m_right = float(x_right.grad)
+        self.b_right = float(y_right - self.m_right * x_right)
+
+    def __call__(self, x):
+        eps = self.eps
+        x_clip = torch.clamp(x, -1.0, 1.0)  # enforce domain
+
+        left_mask = (x_clip >= -1) & (x_clip <= -1 + eps)
+        right_mask = (x_clip >= 1 - eps) & (x_clip <= 1)
+        mid_mask = (~left_mask) & (~right_mask)
+
+        y_out = torch.zeros_like(x_clip)
+        y_out[left_mask] = self.m_left * x_clip[left_mask] + self.b_left
+        y_out[right_mask] = self.m_right * x_clip[right_mask] + self.b_right
+        y_out[mid_mask] = 2*torch.arccos(x_clip[mid_mask])
 
         return y_out
 

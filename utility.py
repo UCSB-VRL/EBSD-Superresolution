@@ -76,8 +76,6 @@ class EBSD_Ti64DIC_dataset(data.Dataset):
 
 class Misorientation_dist:
     def __init__(self, args, dist_type = 'rot_dist', act = None, syms_req = True):
-
-        import pdb; pdb.set_trace()
         
         print(f'Parameters for Misorientation Distance')
         print('+++++++++++++++++++++++++++++++++++++++++')
