@@ -152,7 +152,7 @@ def transformation_matrix_scalar(qSR, qHR, syms):
         qSR_syms_inverse = inverse(qSR_syms)
         T_syms = matrix_hamilton_prod(qSR_syms_inverse, qHR.unsqueeze(3))
 
-        T_syms_scalar = T_syms[...,0].max(-1)[0]
+        T_syms_scalar = torch.abs(T_syms[...,0]).max(-1)[0]
 
         return T_syms_scalar
 
@@ -273,26 +273,28 @@ def validation_rot_dist_approx_MAT_symmetry(q1, q2, syms):
 # Calculates validation loss, using the minimum angle transformation, but without tracking gradients.
 def validation_min_angle_transformation(qSR, qHR, syms):
 
-        device = torch.device('cuda:0')
 
+        device = torch.device('cuda:0')
         qSR = qSR.to(device)
         syms_neg = -1*syms
         syms = torch.cat((syms, syms_neg))
 
-        qSR_syms = outer_prod(qSR, syms)  # shape: [batch, 48]
-        qHR_syms = outer_prod(qHR, syms)  # shape: [batch, 48]
+        # qSR_syms = outer_prod(qSR, syms)  # shape: [batch, 48]
+        # qHR_syms = outer_prod(qHR, syms)  # shape: [batch, 48]
 
-        qSR_inv = inverse(qSR_syms)       # [batch, 48]
+        qSR_inv = inverse(qSR)       # [batch, 48]
         # Compute all pairwise combinations
         # Broadcasting to [batch, 48, 48]
-        qSR_inv_exp = qSR_inv[:, :, None, :]  # [batch, 48, 1, 4]
-        qHR_exp = qHR_syms[:, None, :, :] # [batch, 1, 48, 4]
 
-        T = matrix_hamilton_prod(qSR_inv_exp, qHR_exp)  # [batch, 48, 48, 4]
+        # qSR_inv_exp = qSR_inv[:, :, None, :]  # [batch, 48, 1, 4]
+        # qHR_exp = qHR_syms[:, None, :, :] # [batch, 1, 48, 4]
 
-        theta = 2 * safe_arccos(torch.abs(T[..., 0]))   # [batch, 48, 48]
-        theta_min = theta.view(theta.shape[0], -1).min(-1)[0]  # [batch]
+        T = matrix_hamilton_prod(qSR_inv, qHR)  # [batch, 48, 48, 4]
+        T_syms = outer_prod(T, syms)
+        T_scalar_max = torch.abs(T_syms[..., 0]).max(-1)[0]
 
+        theta_min = 2 * safe_arccos(T_scalar_max)   # [batch, 48, 48]
+        
         return theta_min
                 
         # qSR_syms = outer_prod(qSR, syms)
